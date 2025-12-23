@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バースデースロット</title>
+    
+    <!-- LINEなどで共有した時に表示されるタイトル（ネタバレ防止） -->
+    <title>あなたへメッセージが届いています 🎁</title>
+    
+    <!-- SNSプレビュー用の設定 (Open Graph) -->
+    <meta property="og:title" content="HAPPY BIRTHDAY!">
+    <meta property="og:description" content="あなたへのバースデー・スロットが届きました。何が当たるか回してみてね！">
+    <meta property="og:type" content="website">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;800&display=swap');
 
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
-            background-color: #2d3748; /* ダークな背景でマシンを引き立てる */
+            background-color: #2d3748;
             color: #333;
             overflow: hidden;
         }
@@ -41,7 +49,7 @@
 
         /* リールの表示窓 */
         .reel-window {
-            height: 120px; /* 文字1つ分の高さに合わせる */
+            height: 120px;
             background: white;
             border-radius: 8px;
             overflow: hidden;
@@ -50,7 +58,6 @@
             border: 2px solid #555;
         }
 
-        /* センターライン（当たりの位置） */
         .center-line {
             position: absolute;
             top: 50%;
@@ -61,9 +68,7 @@
             transform: translateY(-50%);
             z-index: 10;
             pointer-events: none;
-            box-shadow: 0 0 5px rgba(255,0,0,0.5);
         }
-        /* 三角の目印 */
         .center-line::before, .center-line::after {
             content: '◀';
             position: absolute;
@@ -79,15 +84,13 @@
             right: auto;
         }
 
-        /* リール（動く部分） */
         .reel-container {
             width: 100%;
             text-align: center;
-            transform: translateY(0); /* 初期位置 */
         }
 
         .reel-item {
-            height: 120px; /* windowと同じ高さ */
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -99,7 +102,6 @@
             padding: 0 20px;
         }
 
-        /* 初期状態の隠しカバー */
         .cover-screen {
             position: absolute;
             top: 0;
@@ -117,33 +119,16 @@
             transition: opacity 0.3s;
         }
 
-        /* 回転アニメーション */
         @keyframes slotScroll {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-50%); } /* リールを2セット積んで半分まで動かす */
+            100% { transform: translateY(-50%); }
         }
 
         .spinning .reel-container {
             animation: slotScroll 0.2s linear infinite;
-        }
-        
-        /* 回転中のブラー（文字を見えなくする） */
-        .spinning .reel-container {
             filter: blur(8px); 
         }
 
-        /* レバー（飾り） */
-        .lever-base {
-            position: absolute;
-            right: -40px;
-            top: 100px;
-            width: 40px;
-            height: 80px;
-            background: #bbb;
-            border-radius: 0 10px 10px 0;
-            z-index: -1;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-        }
         .lever-arm {
             position: absolute;
             right: -60px;
@@ -166,13 +151,11 @@
             height: 40px;
             background: radial-gradient(circle at 30% 30%, #ff4d4d, #cc0000);
             border-radius: 50%;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
         }
         .lever-arm.pulled {
             transform: rotate(20deg) scaleY(0.8);
         }
 
-        /* 結果表示オーバーレイ */
         .result-overlay {
             position: fixed;
             top: 0;
@@ -205,12 +188,12 @@
             transform: scale(1);
         }
         
-        /* サプライズメッセージ */
+        /* サプライズメッセージのスタイル */
         .surprise-text {
             opacity: 0;
             transform: translateY(20px);
             transition: all 1s ease-out;
-            color: #ec4899; /* pink-500 */
+            color: #ec4899;
             font-weight: bold;
             font-size: 1.25rem;
             margin-bottom: 1.5rem;
@@ -220,12 +203,10 @@
             transform: translateY(0);
         }
 
-        /* キラキラ */
         .confetti {
             position: fixed;
             width: 12px;
             height: 12px;
-            background-color: #f00;
             animation: fall linear forwards;
             z-index: 90;
         }
@@ -236,13 +217,11 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen">
 
-    <h1 class="text-4xl font-extrabold mb-10 text-white tracking-widest text-shadow-lg">
+    <h1 class="text-4xl font-extrabold mb-10 text-white tracking-widest">
         🎁 BIRTHDAY SLOT 🎁
     </h1>
 
     <div class="slot-machine">
-        <!-- レバー装飾 -->
-        <div class="lever-base"></div>
         <div id="leverArm" class="lever-arm">
             <div class="lever-ball"></div>
         </div>
@@ -250,12 +229,8 @@
         <div class="screen-frame">
             <div class="reel-window">
                 <div class="center-line"></div>
-                <!-- 初期状態の隠し画面 -->
                 <div id="coverScreen" class="cover-screen">???</div>
-                
-                <div id="reel" class="reel-container">
-                    <!-- JSでアイテムを生成 -->
-                </div>
+                <div id="reel" class="reel-container"></div>
             </div>
         </div>
 
@@ -266,11 +241,8 @@
         </div>
     </div>
 
-    <div id="status" class="mt-8 text-yellow-400 font-bold text-xl h-8 tracking-wider">
-        <!-- ステータス表示 -->
-    </div>
+    <div id="status" class="mt-8 text-yellow-400 font-bold text-xl h-8 tracking-wider"></div>
 
-    <!-- 結果モーダル -->
     <div id="resultOverlay" class="result-overlay">
         <div class="result-box shadow-2xl">
             <p class="text-gray-400 text-lg mb-2">おめでとうございます！</p>
@@ -279,7 +251,7 @@
                 ホテル宿泊
             </div>
             
-            <!-- 追加メッセージエリア -->
+            <!-- サプライズメッセージ -->
             <p id="surpriseMessage" class="surprise-text">
                 ２泊分の着替えも持ってきてね！
             </p>
@@ -291,21 +263,10 @@
     </div>
 
     <script>
-        // 設定: 誕生日プレゼントらしいラインナップ（豪華版）
-        const giftItems = [
-            'ホテル宿泊',       // ターゲット (Index 0)
-            '高級ディナー',
-            '温泉旅行',
-            'テーマパーク',
-            'ヘリコプター遊覧',
-            'ブランドバッグ',
-            'エステフルコース',
-            'リムジンパーティー',
-            'クルージング'
-        ];
-
+        // 豪華な選択肢
+        const giftItems = ['ホテル宿泊','高級ディナー','温泉旅行','テーマパーク','ヘリコプター遊覧','ブランドバッグ','エステフルコース','リムジンパーティー','クルージング'];
         const TARGET_ITEM = 'ホテル宿泊';
-        const REEL_HEIGHT = 120; // 1アイテムの高さ(px)
+        const REEL_HEIGHT = 120;
 
         const reel = document.getElementById('reel');
         const actionBtn = document.getElementById('actionBtn');
@@ -319,12 +280,8 @@
         let isSpinning = false;
         let isStopped = false;
 
-        // リールの初期化
         function initReel() {
-            // アニメーション用にリストを多めに連結する
-            // 少なくとも2セット以上作成し、ループさせる
             const list = [...giftItems, ...giftItems, ...giftItems]; 
-            
             reel.innerHTML = '';
             list.forEach(item => {
                 const div = document.createElement('div');
@@ -332,39 +289,24 @@
                 div.textContent = item;
                 reel.appendChild(div);
             });
-
-            // 初期位置調整（見た目を整えるため）
             reel.style.transform = 'translateY(0px)';
         }
 
         initReel();
 
         actionBtn.addEventListener('click', () => {
-            if (!isSpinning && !isStopped) {
-                startSlot();
-            } else if (isSpinning && !isStopped) {
-                stopSlot();
-            }
+            if (!isSpinning && !isStopped) startSlot();
+            else if (isSpinning && !isStopped) stopSlot();
         });
 
         function startSlot() {
             isSpinning = true;
             statusText.textContent = 'SPINNING...';
-            
-            // ボタンの見た目変更
             actionBtn.textContent = 'STOP!';
             actionBtn.classList.replace('bg-red-500', 'bg-blue-500');
-            actionBtn.classList.replace('hover:bg-red-600', 'hover:bg-blue-600');
-            actionBtn.classList.replace('border-red-700', 'border-blue-700');
-
-            // レバーアニメーション
             leverArm.classList.add('pulled');
             setTimeout(() => leverArm.classList.remove('pulled'), 300);
-
-            // カバーを外す
             coverScreen.style.opacity = '0';
-
-            // 回転開始（CSSアニメーション + ブラー）
             document.querySelector('.slot-machine').classList.add('spinning');
         }
 
@@ -372,65 +314,36 @@
             if (isStopped) return;
             isStopped = true;
             isSpinning = false;
-            
-            actionBtn.textContent = '...';
             actionBtn.disabled = true;
             statusText.textContent = '判定中...';
-
-            // 1. 回転アニメーションを止める
-            const slotMachine = document.querySelector('.slot-machine');
-            slotMachine.classList.remove('spinning');
+            document.querySelector('.slot-machine').classList.remove('spinning');
             
-            // 2. イカサマ位置計算
-            // 一旦、現在のアニメーション位置をリセットし、
-            // 「ターゲットが少し上にある状態」から「ターゲットが真ん中に来る」アニメーションを実行する
-            
-            // ターゲットアイテムのインデックスを探す（リストの真ん中あたりのセットを使うと安全）
-            // giftItemsの長さ分が1セット。2セット目のTARGET_ITEMを狙う
             const targetIndexInList = giftItems.length + giftItems.indexOf(TARGET_ITEM);
-            
-            // ターゲットがウィンドウの中心に来るためのtranslateYの値
-            // ターゲットの上端位置 = index * height
-            // ウィンドウの中心にアイテムの中心を持ってくるには、アイテムの上端が0の位置に来ればよい（window height = item heightなので）
-            // つまり、ターゲットの要素が一番上に表示されるようにスクロールすればよい。
             const targetPosition = targetIndexInList * REEL_HEIGHT;
+            const startPosition = targetPosition - (REEL_HEIGHT * 6);
 
-            // 演出：ターゲットの少し手前（例えば3つ前）からスローダウンして止まるように見せる
-            const startPosition = targetPosition - (REEL_HEIGHT * 6); // 6つ前から
-
-            // リールの位置を強制的にスタート位置へセット
             reel.style.transition = 'none';
-            // 現在の見た目を無視して、計算した「少し手前」の位置に瞬間移動（高速回転中なのでバレにくい）
             reel.style.transform = `translateY(-${startPosition}px)`;
 
-            // 少し待ってから、ターゲット位置まで減速しながら移動
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    reel.style.transition = 'transform 2.5s cubic-bezier(0.15, 0.9, 0.35, 1.05)'; // バウンドするようなイージング
-                    reel.style.transform = `translateY(-${targetPosition}px)`;
-                }, 50);
-            });
+            setTimeout(() => {
+                reel.style.transition = 'transform 2.5s cubic-bezier(0.15, 0.9, 0.35, 1.05)';
+                reel.style.transform = `translateY(-${targetPosition}px)`;
+            }, 50);
 
-            // アニメーション終了後の処理
             reel.addEventListener('transitionend', onStopComplete, { once: true });
         }
 
         function onStopComplete() {
             statusText.textContent = 'JACKPOT!!';
             statusText.classList.add('animate-pulse');
-            
-            // 結果表示
-            setTimeout(() => {
-                showResult(TARGET_ITEM);
-            }, 500);
+            setTimeout(() => showResult(TARGET_ITEM), 500);
         }
 
         function showResult(text) {
             finalResultText.textContent = text;
             resultOverlay.classList.add('show');
             createConfetti();
-            
-            // 少し遅れてメッセージを表示
+            // 1秒後にサプライズメッセージを表示
             setTimeout(() => {
                 surpriseMessage.classList.add('show');
             }, 1000);
@@ -439,20 +352,14 @@
         function resetGame() {
             resultOverlay.classList.remove('show');
             statusText.classList.remove('animate-pulse');
-            surpriseMessage.classList.remove('show'); // メッセージを隠す
-            
-            // リセット
+            surpriseMessage.classList.remove('show');
             reel.style.transition = 'none';
             reel.style.transform = 'translateY(0)';
-            coverScreen.style.opacity = '1'; // カバーを戻す
-            
+            coverScreen.style.opacity = '1';
             isSpinning = false;
             isStopped = false;
-            
             actionBtn.textContent = 'SPIN!';
             actionBtn.classList.replace('bg-blue-500', 'bg-red-500');
-            actionBtn.classList.replace('hover:bg-blue-600', 'hover:bg-red-600');
-            actionBtn.classList.replace('border-blue-700', 'border-red-700');
             actionBtn.disabled = false;
             statusText.textContent = '';
         }
@@ -465,7 +372,6 @@
                 el.style.left = Math.random() * 100 + 'vw';
                 el.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
                 el.style.animationDuration = (1 + Math.random()*2) + 's';
-                el.style.opacity = Math.random();
                 document.body.appendChild(el);
                 setTimeout(() => el.remove(), 3000);
             }
